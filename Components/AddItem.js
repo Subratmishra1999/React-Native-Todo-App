@@ -14,7 +14,7 @@ export default class AddItem extends Component {
                 value: '',
                 isDone: false,
                 type: 'All',
-                all:0,
+                all:1,
                 active:0,
                 completed:0,
         }
