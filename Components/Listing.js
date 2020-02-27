@@ -13,7 +13,6 @@ export default class Listing extends Component {
         render() {
                 return (
                         <View>
-                                <ScrollView>
                                         <List.Item titleStyle={this.props.isDone ? {textDecorationLine:'line-through' } : {}} titleNumberOfLines={5}
                                                 
                                                 title={this.props.name}
@@ -29,7 +28,7 @@ export default class Listing extends Component {
                                                 }
                                                 
                                         />
-                                </ScrollView> 
+                                
                         </View>
                 )
         }
