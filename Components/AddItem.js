@@ -14,6 +14,9 @@ export default class AddItem extends Component {
                 value: '',
                 isDone: false,
                 type: 'All',
+                all:0,
+                active:0,
+                completed:0,
         }
         addTask = async () => {
                 this.state.text = this.state.text.trim()
@@ -45,16 +48,16 @@ export default class AddItem extends Component {
         }
 
         deleteAll = () => {
-                this.setState({ data: [] })
+                this.setState({ data: [] , all:0,active:0,completed:0})
         }
         showActive = () => {
-                this.setState({ type: 'Active' })
+                this.setState({ type: 'Active' ,all:0,active:1,completed:0})
         }
         showCompleted = () => {
-                this.setState({ type: 'Completed' })
+                this.setState({ type: 'Completed',all:0,active:0,completed:1 })
         }
         showAll = () => {
-                this.setState({ type: 'All' })
+                this.setState({ type: 'All' ,all:1,active:0,completed:0})
         }
         // var {vw, vh, vmin, vmax} = require('react-native-viewport-units');
 
@@ -78,13 +81,13 @@ export default class AddItem extends Component {
                                                 </Button>
                                 </View>
                                 <View style={styles.view}>
-                                        <Button style={styles.button} icon="" mode="contained" onPress={this.showAll}>
+                                        <Button style={styles.button} color={this.state.all ? "green":""} icon="" mode="contained" onPress={this.showAll}>
                                                 All
                                         </Button>
-                                        <Button style={styles.button} icon="" mode="contained" onPress={this.showActive}>
+                                        <Button style={styles.button} color={this.state.active ? "green":""} icon="" mode="contained" onPress={this.showActive}>
                                                 Active
                                         </Button>
-                                        <Button style={styles.button} icon="" mode="contained" onPress={this.showCompleted}>
+                                        <Button style={styles.button} color={this.state.completed ? "green":""} icon="" mode="contained" onPress={this.showCompleted}>
                                                 Completed
                                         </Button>
                                 </View>
