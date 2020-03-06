@@ -15,9 +15,24 @@ export default class AddItem extends Component {
                 value: '',
                 isDone: false,
                 type: 'All',
-                all:1,
-                active:0,
-                completed:0,
+                all: 1,
+                active: 0,
+                completed: 0,
+        }
+        componentDidMount() {
+                this.getData()
+        }
+
+        getData() {
+                return fetch('http://10.0.2.2:3000/task')
+                        .then((response) => response.json())
+                        .then((response) => {
+                                this.setState({ data: [...response] })
+
+                        })
+                        .catch((err) => {
+                                console.log("Error Occured" + err)
+                        })
         }
         addTask = async () => {
                 this.state.text = this.state.text.trim()
@@ -26,46 +41,100 @@ export default class AddItem extends Component {
                 }
                 else {
                         const a = { id: Date.now(), value: this.state.text, isDone: false }
-                        await this.setState({ data: [...this.state.data, a] })
-                        await this.setState({ text: '' })
 
-                        
+                        await fetch('http://10.0.2.2:3000/task',
+                                {
+                                        method: 'POST',
+                                        headers: {
+                                                Accept: 'application/json',
+                                                'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+
+                                                _id: a.id,
+                                                value: a.value,
+                                                isDone: a.isDone
+                                        })
+                                }
+                        ).then((response) => console.log(response))
+                                .catch((err) => {
+                                        console.log(err)
+                                })
+                        this.getData()
+                        await this.setState({ text: '' })
                 }
         }
-        changeState = (a) => {
-                this.state.data.map((key, index) => {
-                        if (key.id === a.id) {
-                                key.isDone = !key.isDone
-                                this.setState({ isDone: !this.state.isDone })
+        changeState = async (a) => {
+                var b = 'http://10.0.2.2:3000/task/' + a.id
+                // console.log(b)
+                await fetch(b, {
+                        method: 'PUT',
+                        headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
                         }
-                });
+                })
+                        .then((response) => console.log(response))
+                        .catch((err) => console.log("Error Occured" + err))
+                this.getData()
+
+                // FOllowing is the code for changing the statte variables.
+
+
+                // this.state.data.map((key, index) => {
+                //         if (key.id === a.id) {
+                //                 key.isDone = !key.isDone
+                //                 this.setState({ isDone: !this.state.isDone })
+                //         }
+                // });
         }
 
-        deleteState = (a) => {
-                this.state.data.map((key, index) => {
-                        if (key.id === a.id) {
-                                this.state.data.splice(index, 1)
-                                this.setState({ isDone: !this.state.isDone })
+        deleteState = async (a) => {
+                var b = 'http://10.0.2.2:3000/task/' + a.id
+                await fetch(b, {
+                        method: 'DELETE',
+                        header: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
                         }
-                });
+                })
+                this.getData()
+
+                //Following is the code for deleting the data without the need of mongoose.
+
+                // this.state.data.map((key, index) => {
+                //         if (key.id === a.id) {
+                //                 this.state.data.splice(index, 1)
+                //                 this.setState({ isDone: !this.state.isDone })
+                //         }
+                // });
         }
 
-        deleteAll = () => {
-                this.setState({ data: [] , all:0,active:0,completed:0})
+        deleteAll = async () => {
+
+                await fetch('http://10.0.2.2:3000/task', {
+                        method: 'DELETE',
+                       
+                }).then((response)=>console.log(response))
+                .catch((err)=>console.log(err))
+                this.getData()
+                this.setState({ data: [], all: 0, active: 0, completed: 0 })
         }
         showActive = () => {
-                this.setState({ type: 'Active' ,all:0,active:1,completed:0})
+                this.getData()
+                this.setState({ type: 'Active', all: 0, active: 1, completed: 0 })
         }
         showCompleted = () => {
-                this.setState({ type: 'Completed',all:0,active:0,completed:1 })
+                this.getData()
+                this.setState({ type: 'Completed', all: 0, active: 0, completed: 1 })
         }
         showAll = () => {
-                this.setState({ type: 'All' ,all:1,active:0,completed:0})
+                this.getData()
+                this.setState({ type: 'All', all: 1, active: 0, completed: 0 })
         }
         // var {vw, vh, vmin, vmax} = require('react-native-viewport-units');
 
         render() {
-
 
                 return (
                         <View>
@@ -84,13 +153,13 @@ export default class AddItem extends Component {
                                                 </Button>
                                 </View>
                                 <View style={styles.view}>
-                                        <Button style={styles.button} color={this.state.all ? "green":""} icon="" mode="contained" onPress={this.showAll}>
+                                        <Button style={styles.button} color={this.state.all ? "green" : ""} icon="" mode="contained" onPress={this.showAll}>
                                                 All
                                         </Button>
-                                        <Button style={styles.button} color={this.state.active ? "green":""} icon="" mode="contained" onPress={this.showActive}>
+                                        <Button style={styles.button} color={this.state.active ? "green" : ""} icon="" mode="contained" onPress={this.showActive}>
                                                 Active
                                         </Button>
-                                        <Button style={styles.button} color={this.state.completed ? "green":""} icon="" mode="contained" onPress={this.showCompleted}>
+                                        <Button style={styles.button} color={this.state.completed ? "green" : ""} icon="" mode="contained" onPress={this.showCompleted}>
                                                 Completed
                                         </Button>
                                 </View>
@@ -103,11 +172,11 @@ export default class AddItem extends Component {
                                 }}>
                                         {this.state.data.map((post, index) => {
                                                 if (this.state.type === 'Active' && !post.isDone)
-                                                        return <Listing key={index} name={post.value} id={post.id} isDone={post.isDone} changeState={this.changeState} deleteState={this.deleteState} />
+                                                        return <Listing key={index} name={post.value} id={post._id} isDone={post.isDone} changeState={this.changeState} deleteState={this.deleteState} />
                                                 else if (this.state.type === 'Completed' && post.isDone)
-                                                        return <Listing key={index} name={post.value} id={post.id} isDone={post.isDone} changeState={this.changeState} deleteState={this.deleteState} />
+                                                        return <Listing key={index} name={post.value} id={post._id} isDone={post.isDone} changeState={this.changeState} deleteState={this.deleteState} />
                                                 else if (this.state.type === 'All')
-                                                        return <Listing key={index} name={post.value} id={post.id} isDone={post.isDone} changeState={this.changeState} deleteState={this.deleteState} />
+                                                        return <Listing key={index} name={post.value} id={post._id} isDone={post.isDone} changeState={this.changeState} deleteState={this.deleteState} />
 
                                         })}
                                 </ScrollView>
