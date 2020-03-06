@@ -4,6 +4,7 @@ import { TextInput, Button } from 'react-native-paper'
 import makeObj from '../Components/makeObj'
 import Listing from '../Components/Listing'
 import { vw, vh, vmin, vmax } from 'react-native-expo-viewport-units';
+import axios from 'axios';
 
 
 export default class AddItem extends Component {
@@ -27,6 +28,8 @@ export default class AddItem extends Component {
                         const a = { id: Date.now(), value: this.state.text, isDone: false }
                         await this.setState({ data: [...this.state.data, a] })
                         await this.setState({ text: '' })
+
+                        
                 }
         }
         changeState = (a) => {
